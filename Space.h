@@ -29,7 +29,7 @@ namespace Monopoly {
     void removePlayer(const Player& player);
     void removeAllPlayers();
     SpaceType getSpaceType() const;
-    void activate(Player& activatingPlayer);
+    void activate(Player& activatingPlayer, std::vector<Player>& players);
 
     int getSalary() const;
     int getCost() const;

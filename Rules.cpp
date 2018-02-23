@@ -38,8 +38,13 @@ Monopoly::Rules::Rules(const std::string& rulesFileName) : num_dice_rolled(2), m
 
   std::getline(rulesFile, header, ':');
   rulesFile >> salary_multiplier_for_landing_on_go;
-}
 
+  std::getline(rulesFile, header, ':');
+  rulesFile >> max_rolls;
+}
+int Monopoly::Rules::getmax_rolls() const {
+  return max_rolls;
+}
 bool Monopoly::Rules::is_turn_limit() const {
   return turn_limit != -1;
 }

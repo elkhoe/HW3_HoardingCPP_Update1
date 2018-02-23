@@ -5,6 +5,7 @@
 #include "Player.h"
 #include <iostream>
 #include <cctype>
+#include "GameState.h"
 
 unsigned long Monopoly::Player::length_of_longest_player_name;
 
@@ -57,19 +58,19 @@ Monopoly::Space& Monopoly::Player::getSpaceOn() {
   return *spaceOn;
 }
 
-void Monopoly::Player::setOn(Space& space, bool activateSpace) {
+void Monopoly::Player::setOn(Space& space, std::vector<Player>& players, bool activateSpace) {
   this->spaceOn = &space;
   space.addPlayer(*this);
 
   if (activateSpace) {
-    space.activate(*this);
+    space.activate(*this, players );
   }
 
 }
 
-void Monopoly::Player::moveTo(Monopoly::Space& space, bool activateSpace) {
+void Monopoly::Player::moveTo(Monopoly::Space& space, std::vector<Player>& players, bool activateSpace) {
   spaceOn->removePlayer(*this);
-  setOn(space);
+  setOn(space, players);
 
 }
 
@@ -89,6 +90,12 @@ bool Monopoly::Player::getBuyDecision(const Monopoly::Space& space) const {
 
 void Monopoly::Player::purchase(Monopoly::Property& property) {
   cash -= property.getCost();
+  property.setOwner(this);
+  propertyManager.takeOwnershipOf(property);
+}
+//////////
+void Monopoly::Player::auction_win(Monopoly::Property& property,int highestbid){
+  cash -= highestbid;
   property.setOwner(this);
   propertyManager.takeOwnershipOf(property);
 }
@@ -130,8 +137,3 @@ int Monopoly::Player::getNetWorth() const {
 
   return cash + propertyManager.getValue();
 }
-
-
-
-
-

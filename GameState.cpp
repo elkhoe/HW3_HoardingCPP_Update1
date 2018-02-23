@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Move.h"
 #include "PropertyManager.h"
+#include "DiceRoller.h"
 
 Monopoly::GameState::GameState(const std::string& RulesFileName,
                                const std::string& BoardFileName,
@@ -33,7 +34,7 @@ Monopoly::GameState::GameState(const std::string& RulesFileName,
    * vector
    */
   for (auto& player : players) {
-    player.setOn(board.getGoSpace(), false);
+    player.setOn(board.getGoSpace(), players, false);
   }
 
   Player::length_of_longest_player_name =
@@ -64,17 +65,34 @@ std::vector<std::string> Monopoly::GameState::get_player_names() {
 
 void Monopoly::GameState::playGame() {
   Move move;
+int maxrolls = rules.getmax_rolls();
+//variable maxrolls gotten from rules file
   while (!isGameOver()){
-    display();
+
     do {
+      display();
+      //let the player make a single move
       move = getCurrentPlayer().getMove();
-      make_move(getCurrentPlayer(), move);
+        make_move(getCurrentPlayer(), move);
+        //if they roll double, whill go into while loop below
+
+        while(maxrolls > 0 && diceRoller.multiplesRolled()){
+          //while they do not run out of their max rolls,
+          //they will keep playing
+          display();
+          move = getCurrentPlayer().getMove();
+          make_move(getCurrentPlayer(), move);
+          maxrolls--; //decrement the value so we know that they're using up
+          //their turns.
+        }
+
     } while (!move.endsTurn());
     changeTurn();
   }
   display();
   declareWinner();
 }
+
 
 /**
  * Check if the game is over or not
@@ -101,15 +119,16 @@ void Monopoly::GameState::make_move(Monopoly::Player& player, Monopoly::Move& mo
     player.giveCash(board.getGoSpace().getSalary() * timesPastGo);
 
     newLocation %= board.getNumSpaces();
-    player.moveTo(board.getSpace(newLocation));
+    player.moveTo(board.getSpace(newLocation), players);
 
     if (player.getCash() < 0) {
       removeFromGame(player);
     }
-  } else if (move.getAction() == MoveAction::leaveGame) {
+  } else if(move.getAction() == MoveAction::leaveGame) {
     removeFromGame(player);
-  }
-}
+  }}
+
+
 
 void Monopoly::GameState::declareWinner() {
   int maxWorth = 0;
@@ -159,4 +178,3 @@ void Monopoly::GameState::removeFromGame(Monopoly::Player& player) {
   player_turn--;
 
 }
-
