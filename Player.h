@@ -20,6 +20,7 @@ namespace Monopoly {
     Player(int id, const std::string& name, int cash, Space* spaceOn, const PropertyManager& propertyManager);
     Player(const Player& player) = default;
     Space& getSpaceOn();
+    PropertyManager& getPropertyManager();
     virtual ~Player();
 
     void setOn(Space& space, bool activateSpace = true);

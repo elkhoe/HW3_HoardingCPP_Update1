@@ -1,4 +1,4 @@
-//
+ //
 // Created by mfbut on 1/23/2018.
 //
 
@@ -35,16 +35,15 @@ int Monopoly::DiceRoller::getDiceRoll() {
  * Check if any multiples were rolled in the previous roll
  * @return
  */
-bool Monopoly::DiceRoller::multiplesRolled() const {
-  for (auto die1 = prev_die_rolls.cbegin(); die1 != prev_die_rolls.cend(); ++die1) {
-    for (auto die2 = die1 + 1; die2 != prev_die_rolls.cend(); ++die2) {
-      if (die1 == die2) {
-        return true;
-      }
-    }
-  }
+ bool Monopoly::DiceRoller::multiplesRolled() const {
+   for (auto die1 = prev_die_rolls.cbegin(); die1 != prev_die_rolls.cend(); ++die1) {
+     for (auto die2 = die1 + 1; die2 != prev_die_rolls.cend(); ++die2) {
+       if (*die1 == *die2) {
+         return true;
+       }
+     }
+   }
 
-  return false;
-}
-
+   return false;
+ }
 

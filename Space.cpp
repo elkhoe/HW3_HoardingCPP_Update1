@@ -39,6 +39,9 @@ void Monopoly::Space::display() const {
   } else {
     std::cout << " This space has an unknown type" << std::endl;
   }
+  std::cout.width(length_of_longest_space_name);
+  std::cout << getPrintedBuildings() << " | "; //FIXME: h does not show for first graphic, but then shows
+
   std::cout.flags(frmt_flags);
 
   auto player = playersOnSpace.cbegin();
@@ -64,6 +67,20 @@ const std::string& Monopoly::Space::getName() const {
   } else {
     return propertyPtr->getName();
   }
+}
+
+std::string Monopoly::Space::getPrintedBuildings() const{
+  if(spaceType != SpaceType::goSpace) { //if not go space
+    int strlen = propertyPtr->gethouseString().length();
+      if(propertyPtr->getNumHouses() > strlen) {
+        return propertyPtr->addh();
+      }else if(propertyPtr->getNumHouses() < strlen){
+        return propertyPtr->minush();
+      }else {
+        return propertyPtr->gethouseString();
+      }
+  }
+  return "";
 }
 
 void Monopoly::Space::addPlayer(Monopoly::Player& player) {
@@ -168,6 +185,13 @@ int Monopoly::Space::getBasicRent() const {
   }
 }
 
+int Monopoly::Space::getBuildingRent() {
+  if(spaceType == SpaceType::propertySpace) {
+    return propertyPtr->getRent() * 2^(propertyPtr->getNumHouses()- 1);
+  } else {
+    return -99;
+  }
+}
 
 
 

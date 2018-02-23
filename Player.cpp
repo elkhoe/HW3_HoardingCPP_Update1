@@ -37,7 +37,9 @@ Monopoly::Move Monopoly::Player::getMove() {
   int move_number;
   std::cout << name << " please enter your move" << std::endl;
   std::cout << "1 to roll dice" << std::endl;
-  std::cout << "2 to leave the game" << std::endl;
+  std::cout << "2 to upgrade property with house or hotel" << std::endl;
+  std::cout << "3 to sell a house or hotel" << std::endl;
+  std::cout << "4 to leave the game" << std::endl; //this was originally "2 to leave the game"
   std::cout << "Your move: ";
   std::cin >> move_number;
   current_move = Move(move_number);
@@ -55,6 +57,9 @@ int Monopoly::Player::getId() const {
 
 Monopoly::Space& Monopoly::Player::getSpaceOn() {
   return *spaceOn;
+}
+Monopoly::PropertyManager& Monopoly::Player::getPropertyManager() {
+  return propertyManager;
 }
 
 void Monopoly::Player::setOn(Space& space, bool activateSpace) {
@@ -128,7 +133,7 @@ Monopoly::Player::~Player() {
 
 int Monopoly::Player::getNetWorth() const {
 
-  return cash + propertyManager.getValue();
+  return cash + propertyManager.getValue(); //FIXME: add cost of their properties and cost of the upgrades on the properties
 }
 
 

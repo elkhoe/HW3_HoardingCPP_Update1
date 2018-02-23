@@ -41,21 +41,26 @@ void Monopoly::Board::display() const {
   const std::string spaceNumber("Space Number");
   const std::string spaceName("Space Name");
   const std::string owner("Owner");
+  const std::string upgrade("Upgrades");
   const std::string playersString("Players");
-  const auto frmt_flags = std::cout.flags();
-  std::cout.setf(std::ios::left);
+  const auto frmt_flags = std::cout.flags(); //what are these
+  std::cout.setf(std::ios::left); //what are these
 
   std::cout << spaceNumber; std::cout << " | ";
+
   std::cout.width(Space::length_of_longest_space_name);
   std::cout << spaceName; std::cout << " | ";
 
   std::cout.width(Player::length_of_longest_player_name);
-
   std::cout << owner; std::cout << " | ";
+
+  std::cout.width(Space::length_of_longest_space_name);
+  std::cout << upgrade; std::cout << " | ";
+
   std::cout << playersString; std::cout << std::endl;
 
   int i = 0;
-  for (const auto& space : spaces) {
+  for (const auto& space : spaces) { //change this for the upgrades
     std::cout.width(spaceNumber.size());
     std::cout << i << " | ";
     space.display();
