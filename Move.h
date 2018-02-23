@@ -6,7 +6,7 @@
 #define HOARDINGCPPVERSION_MOVE_H
 
 namespace Monopoly {
-  enum class MoveAction { rollDice = 1, leaveGame = 2, ERROR };
+  enum class MoveAction { rollDice = 1, upgradeProperty = 2, sellProperty = 3, leaveGame = 4, ERROR };
   class Move {
    public:
     Move();

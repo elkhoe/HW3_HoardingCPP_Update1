@@ -25,17 +25,19 @@ namespace Monopoly {
     int getSpaceNumber() const;
     void display() const;
     const std::string& getName() const;
+    std::string getPrintedBuildings() const;
     void addPlayer(Player& player);
     void removePlayer(const Player& player);
     void removeAllPlayers();
     SpaceType getSpaceType() const;
-    void activate(Player& activatingPlayer, std::vector<Player>& players);
+    void activate(Player& activatingPlayer);
 
     int getSalary() const;
     int getCost() const;
     int getSetId() const;
     int getIntraSetId() const;
     int getBasicRent() const;
+    int getBuildingRent();
 
    private:
     SpaceType spaceType;

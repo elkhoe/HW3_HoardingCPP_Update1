@@ -5,7 +5,6 @@
 #include "Player.h"
 #include <iostream>
 #include <cctype>
-#include "GameState.h"
 
 unsigned long Monopoly::Player::length_of_longest_player_name;
 
@@ -38,7 +37,9 @@ Monopoly::Move Monopoly::Player::getMove() {
   int move_number;
   std::cout << name << " please enter your move" << std::endl;
   std::cout << "1 to roll dice" << std::endl;
-  std::cout << "2 to leave the game" << std::endl;
+  std::cout << "2 to upgrade property with house or hotel" << std::endl;
+  std::cout << "3 to sell a house or hotel" << std::endl;
+  std::cout << "4 to leave the game" << std::endl; //this was originally "2 to leave the game"
   std::cout << "Your move: ";
   std::cin >> move_number;
   current_move = Move(move_number);
@@ -57,20 +58,23 @@ int Monopoly::Player::getId() const {
 Monopoly::Space& Monopoly::Player::getSpaceOn() {
   return *spaceOn;
 }
+Monopoly::PropertyManager& Monopoly::Player::getPropertyManager() {
+  return propertyManager;
+}
 
-void Monopoly::Player::setOn(Space& space, std::vector<Player>& players, bool activateSpace) {
+void Monopoly::Player::setOn(Space& space, bool activateSpace) {
   this->spaceOn = &space;
   space.addPlayer(*this);
 
   if (activateSpace) {
-    space.activate(*this, players );
+    space.activate(*this);
   }
 
 }
 
-void Monopoly::Player::moveTo(Monopoly::Space& space, std::vector<Player>& players, bool activateSpace) {
+void Monopoly::Player::moveTo(Monopoly::Space& space, bool activateSpace) {
   spaceOn->removePlayer(*this);
-  setOn(space, players);
+  setOn(space);
 
 }
 
@@ -90,12 +94,6 @@ bool Monopoly::Player::getBuyDecision(const Monopoly::Space& space) const {
 
 void Monopoly::Player::purchase(Monopoly::Property& property) {
   cash -= property.getCost();
-  property.setOwner(this);
-  propertyManager.takeOwnershipOf(property);
-}
-//////////
-void Monopoly::Player::auction_win(Monopoly::Property& property,int highestbid){
-  cash -= highestbid;
   property.setOwner(this);
   propertyManager.takeOwnershipOf(property);
 }
@@ -135,5 +133,10 @@ Monopoly::Player::~Player() {
 
 int Monopoly::Player::getNetWorth() const {
 
-  return cash + propertyManager.getValue();
+  return cash + propertyManager.getValue(); //FIXME: add cost of their properties and cost of the upgrades on the properties
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-//
+ //
 // Created by mfbut on 1/23/2018.
 //
 
@@ -46,3 +46,4 @@ int Monopoly::DiceRoller::getDiceRoll() {
 
    return false;
  }
+

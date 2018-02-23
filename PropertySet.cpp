@@ -1,7 +1,8 @@
 //
 // Created by mfbut on 1/27/2018.
 //
-
+#include <iostream>
+#include <map>
 #include "PropertySet.h"
 
 Monopoly::PropertySet::PropertySet(int setId) : setId(setId), numPropertiesInSet(1) {}
@@ -65,7 +66,7 @@ bool Monopoly::PropertySet::ownsAll() const {
   return static_cast<int>(properties.size()) == numPropertiesInSet;
 }
 
-const std::vector<Monopoly::Property*>& Monopoly::PropertySet::getProperties() const {
+std::vector<Monopoly::Property*>& Monopoly::PropertySet::getProperties() {
   return properties;
 }
 
@@ -90,9 +91,17 @@ int Monopoly::PropertySet::getValue() const {
   int value = 0;
   for (const auto& property : properties) {
     value += property->getCost();
+    value += property->getHouse_cost() * property->getNumHouses();
+    value += property->getHotel_cost() * property->getNumHotels();
   }
   return value;
 }
+
+int Monopoly::PropertySet::getNumPropertiesInSet() const {
+  return numPropertiesInSet;
+}
+
+
 
 
 

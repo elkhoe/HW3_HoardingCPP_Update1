@@ -20,10 +20,13 @@ namespace Monopoly {
     void removeProperty(const Property& property);
     void clear();
     bool ownsAll() const;
-    const std::vector<Property*>& getProperties() const;
+    std::vector<Property*>& getProperties();
     void updateOwner(Player& newOwner);
     int getValue() const;
     virtual ~PropertySet();
+    int getNumPropertiesInSet() const;
+
+
    private:
     int setId;
     int numPropertiesInSet;
