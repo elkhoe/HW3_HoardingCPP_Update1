@@ -30,7 +30,6 @@ namespace Monopoly {
     bool auction_properties;
     int salary_multiplier_for_landing_on_go;
 
-   int max_rolls;
     bool is_turn_limit() const;
    public:
     int getStarting_cash() const;
@@ -45,8 +44,6 @@ namespace Monopoly {
     bool isAuction_properties() const;
     int getSalary_multiplier_for_landing_on_go() const;
     bool isTurnLimit() const;
-    int getmax_rolls() const;
-
   };
 }
 

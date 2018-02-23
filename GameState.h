@@ -30,11 +30,9 @@ namespace Monopoly {
     void declareWinner();
     void changeTurn();
     void removeFromGame(Player& player);
-    std::vector<Player> get_players(){
-      return players;
-    }
+
     void display() const;
-    //bool roll_again(int num);
+
    private:
 
     Rules rules;

@@ -5,8 +5,6 @@
 #include "Space.h"
 #include "MonopolyUtility.h"
 #include "Player.h"
-#include "GameState.h"
-#include "Auction.h"
 
 unsigned long Monopoly::Space::length_of_longest_space_name;
 
@@ -99,7 +97,7 @@ int Monopoly::Space::getSpaceNumber() const {
   return spaceNumber;
 }
 
-void Monopoly::Space::activate(Monopoly::Player& activatingPlayer, std::vector<Player>& players){
+void Monopoly::Space::activate(Monopoly::Player& activatingPlayer) {
   if (spaceType == SpaceType::goSpace) {
     // -1 below because they've already been given some of the salary for
     // "passing" go
@@ -113,146 +111,20 @@ void Monopoly::Space::activate(Monopoly::Player& activatingPlayer, std::vector<P
           std::cout << activatingPlayer.getName() << " bought " << getName() << " for $" << propertyPtr->getCost()
                     << std::endl;
           activatingPlayer.purchase(*propertyPtr);
-} else if(!toBuy){
-  Auction auction;
-  std::string highestbidder = "bob";
-  int auction_members = players.size();
-
-  for(int i = 0; i < players.size(); i++){
-
-  players[i].set_is_in_auction_bool(true);
-  }
-  auction.set_auction_has_max_bidder(false);
-  auction.set_highestbid(0);
-
-
-  std::cout << "Starting the auction for " << getName() << std::endl;
-
-  while((auction_members > 1)){
-  for(int i = 0; i < auction_members; i++){
-
-    if(players[i].get_is_in_auction_bool() == true){
-
-      if (auction.get_highestbid() > players[i].getCash()){
-        players[i].set_is_in_auction_bool(false);
-        auction_members--;
-        continue;
-      }
-
-      if (!auction.get_auction_has_max_bidder()){
-        std::cout << "No one has bid on "<< getName() << " [$" << getCost() << "] yet" << std::endl;
-      }
-        else if (auction.get_auction_has_max_bidder()){
-        std::cout <<"The current bid for "<< getName() << " [$" << getCost() << "]" << " is $" << auction.get_highestbid() << " by "<< highestbidder << std::endl;
-  }
-    std::cout << players[i].getName() <<", enter a bid of at least " << (auction.get_highestbid()+1) << " to bid on the property or a value less that that to leave the auction" << std::endl;
-    std::cout << "Your bid:" << std::endl;
-    int newbid1;
-    std::cin >> newbid1;
-   auction.set_newbid(newbid1);
-
-    auction.set_auction_has_max_bidder(true);
-
-    if(auction.get_newbid() < auction.get_highestbid()+1){
-      players[i].set_is_in_auction_bool(false);
-      auction_members--;
-      continue;
-    }
-
-    else if(auction.get_newbid() > auction.get_highestbid()){
-      highestbidder = players[i].getName();
-      auction.set_highestbid(newbid1);
-    }
-  }
-  }
-  }
-
-for(int i=0; i < players.size(); i++){
-  if(players[i].getName() == highestbidder){
-    players[i].auction_win(*propertyPtr, auction.get_highestbid());
-  }
-    else if(auction.get_highestbid() == 0){
-      owner = nullptr;
-    }
-  }
-}
-///////
-}
-
-       else { // not enough money to buy property
+        }
+      } else { // not enough money to buy property
         std::cout << activatingPlayer.getName() << ", you don't have enough money to afford " << getName() << ". "
                   << getName() << " costs $" << getCost() << " but you only have $" << activatingPlayer.getCash()
                   << std::endl;
-//starting auction
-                  Auction auction;
-                  std::string highestbidder = "bob";
-                  int auction_members = players.size();
 
-                  for(int i = 0; i < players.size(); i++){
-
-                  players[i].set_is_in_auction_bool(true);
-                  }
-                  auction.set_auction_has_max_bidder(false);
-                  auction.set_highestbid(0);
-
-
-                  std::cout << "Starting the auction for " << getName() << std::endl;
-
-                  while((auction_members > 1)){
-                  for(int i = 0; i < auction_members; i++){
-
-                    if(players[i].get_is_in_auction_bool() == true){
-
-                      if (auction.get_highestbid() > players[i].getCash()){
-                        players[i].set_is_in_auction_bool(false);
-                        auction_members--;
-                        continue;
-                      }
-
-                      if (!auction.get_auction_has_max_bidder()){
-                        std::cout << "No one has bid on "<< getName() << " [$" << getCost() << "] yet" << std::endl;
-                      }
-                        else if (auction.get_auction_has_max_bidder()){
-                        std::cout <<"The current bid for "<< getName() << " [$" << getCost() << "]" << " is $" << auction.get_highestbid() << " by "<< highestbidder << std::endl;
-                  }
-                    std::cout << players[i].getName() <<", enter a bid of at least " << (auction.get_highestbid()+1) << " to bid on the property or a value less that that to leave the auction" << std::endl;
-                    std::cout << "Your bid:" << std::endl;
-                    int newbid1;
-                    std::cin >> newbid1;
-                   auction.set_newbid(newbid1);
-
-                    auction.set_auction_has_max_bidder(true);
-
-                    if(auction.get_newbid() < auction.get_highestbid()+1){
-                      players[i].set_is_in_auction_bool(false);
-                      auction_members--;
-                      continue;
-                    }
-
-                    else if(auction.get_newbid() > auction.get_highestbid()){
-                      highestbidder = players[i].getName();
-                      auction.set_highestbid(newbid1);
-                    }
-                  }
-                  }
-                  }
-
-                for(int i=0; i < players.size(); i++){
-                  if(players[i].getName() == highestbidder){
-                    players[i].auction_win(*propertyPtr, auction.get_highestbid());
-                  }
-                }
-      }}
-     else if(owner->getId() == activatingPlayer.getId()) {// player landed on their own property
+      }
+    } else if (owner->getId() == activatingPlayer.getId()) {// player landed on their own property
       std::cout << activatingPlayer.getName() << ", you landed on " << getName() << "which you already own" << std::endl;
     } else { //landed on a space another player owes
       activatingPlayer.pay(*owner, *propertyPtr, rules);
-
-
-
-    }}}
-
-
+    }
+  }
+}
 
 int Monopoly::Space::getSalary() const {
   if (spaceType == SpaceType::goSpace) {
@@ -295,3 +167,9 @@ int Monopoly::Space::getBasicRent() const {
     return -99;
   }
 }
+
+
+
+
+
+
