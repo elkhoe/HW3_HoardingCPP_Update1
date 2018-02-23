@@ -1,13 +1,12 @@
 //
 // Created by mfbut on 1/20/2018.
 //
-
+#include <iostream>
 #include "GameState.h"
 #include "MonopolyUtility.h"
-#include <iostream>
 #include "Move.h"
+#include "GameState.h"
 #include "PropertyManager.h"
-#include "DiceRoller.h"
 
 Monopoly::GameState::GameState(const std::string& RulesFileName,
                                const std::string& BoardFileName,
@@ -34,11 +33,11 @@ Monopoly::GameState::GameState(const std::string& RulesFileName,
    * vector
    */
   for (auto& player : players) {
-    player.setOn(board.getGoSpace(), players, false);
+    player.setOn(board.getGoSpace(), false);
   }
 
   Player::length_of_longest_player_name =
-      Utility::max(Utility::get_max_string_length(playerNames), std::string("Owner").size());
+      Utility::max(Utility::get_max_string_length(playerNames), std::string("Owner").size()); //don't know what this does
 
 }
 
@@ -65,34 +64,17 @@ std::vector<std::string> Monopoly::GameState::get_player_names() {
 
 void Monopoly::GameState::playGame() {
   Move move;
-int maxrolls = rules.getmax_rolls();
-//variable maxrolls gotten from rules file
   while (!isGameOver()){
-
+    display();
     do {
-      display();
-      //let the player make a single move
       move = getCurrentPlayer().getMove();
-        make_move(getCurrentPlayer(), move);
-        //if they roll double, whill go into while loop below
-
-        while(maxrolls > 0 && diceRoller.multiplesRolled()){
-          //while they do not run out of their max rolls,
-          //they will keep playing
-          display();
-          move = getCurrentPlayer().getMove();
-          make_move(getCurrentPlayer(), move);
-          maxrolls--; //decrement the value so we know that they're using up
-          //their turns.
-        }
-
+      make_move(getCurrentPlayer(), move);
     } while (!move.endsTurn());
     changeTurn();
   }
   display();
   declareWinner();
 }
-
 
 /**
  * Check if the game is over or not
@@ -103,11 +85,12 @@ bool Monopoly::GameState::isGameOver() const {
       || (rules.isTurnLimit() && turn_count >= rules.getTurn_limit());
 }
 
-Monopoly::Player& Monopoly::GameState::getCurrentPlayer() {
+Monopoly::Player& Monopoly::GameState::getCurrentPlayer() { //returns reference to player
   return players[player_turn];
 }
 
 void Monopoly::GameState::make_move(Monopoly::Player& player, Monopoly::Move& move) {
+  int mapSize = player.getPropertyManager().getEntireMap().size();
   if (move.getAction() == MoveAction::rollDice) {
     int spacesToMove = diceRoller.getDiceRoll();
     int newLocation = spacesToMove + player.getSpaceOn().getSpaceNumber();
@@ -119,16 +102,35 @@ void Monopoly::GameState::make_move(Monopoly::Player& player, Monopoly::Move& mo
     player.giveCash(board.getGoSpace().getSalary() * timesPastGo);
 
     newLocation %= board.getNumSpaces();
-    player.moveTo(board.getSpace(newLocation), players);
+    player.moveTo(board.getSpace(newLocation));
 
     if (player.getCash() < 0) {
       removeFromGame(player);
     }
-  } else if(move.getAction() == MoveAction::leaveGame) {
+  } else if (move.getAction() == MoveAction::upgradeProperty) {
+    for(int i =0; i < mapSize; i++) {
+      if (player.ownsAllPropertiesInSet(i) && player.getCash() >= 0) {
+        upgradePlayerProperty(player.getPropertyManager().getEntireMap().at(i).getProperties());
+      } else {
+        std::cout << "You don't have any properties that you can upgrade" << std::endl;
+         //FIXME: make sure that the turn doesn't end
+      }
+    }
+
+  } else if (move.getAction() == MoveAction::sellProperty)
+  {
+    for(int i =0; i < mapSize; i++) {
+      if (player.ownsAllPropertiesInSet(i) && player.getCash() >= 0) {
+        sellPlayerProperty(player.getPropertyManager().getEntireMap().at(i).getProperties());
+      } else {
+        std::cout << "You have no upgrades to sell" << std::endl;
+        //FIXME: make sure that the turn doesn't end
+      }
+    }
+  } else if (move.getAction() == MoveAction::leaveGame) {
     removeFromGame(player);
-  }}
-
-
+  }
+}
 
 void Monopoly::GameState::declareWinner() {
   int maxWorth = 0;
@@ -155,6 +157,84 @@ void Monopoly::GameState::changeTurn() {
   player_turn = (player_turn + 1) % players.size();
 }
 
+void Monopoly::GameState::upgradePlayerProperty(std::vector<Property*>& PropertyList) {
+  int counter =0;
+  int userInput = 0;
+      std::cout << "Which property do you want to upgrade?" << std::endl;
+        printProperty(PropertyList, rules, counter);
+      std::cin >> userInput;
+      upgradeBuilding(PropertyList.at(userInput), rules);
+  return;
+}
+void Monopoly::GameState::upgradeBuilding(Property*& propertyptr, const Rules& rules) { //specify if building is hotel or house
+  if(rules.getNum_houses_before_hotel() == propertyptr->getNumHouses()) {
+    propertyptr->incNumHotels();
+  }else {
+    propertyptr->incNumHouses();
+  }
+  return;
+}
+
+void Monopoly::GameState::sellPlayerProperty(std::vector<Property*>& PropertyList) {
+  int userInput = 0;
+  std::cout << "Which property do you want to sell?" << std::endl;
+  int counter = 0;
+  printPropertySell( PropertyList, rules, counter);
+  std::cin >> userInput;
+  sellBuilding(PropertyList.at(userInput), rules);
+  return;
+}
+
+void Monopoly::GameState::sellBuilding(Property*& propertyptr, const Rules &rules) {
+  if(propertyptr->getNumHotels() > 0) {
+    propertyptr->decNumHotels(rules);
+    return;
+  }else {
+    propertyptr->decNumHouses();
+  }
+}
+void Monopoly::GameState::printProperty(std::vector<Property*>& PropertyList, Rules& rules, int& counter) {
+ /* if(rules.Must_build_evenly()) {
+    for(const auto& propertyptr : PropertyList) {
+      if(propertyptr->getNumHouses() < )
+      propertyptr->getNumHouses()
+    }
+  }*/
+  for(const auto& propertyptr : PropertyList) {
+    if(rules.getNum_houses_before_hotel() == propertyptr->getNumHouses()) {
+      std::cout << counter << ". "
+                << propertyptr->getName()
+                << " [$" << propertyptr->getHotel_cost() << "]" << std::endl;
+      ++counter;
+    }
+    else {
+      std::cout << counter << ". "
+                << propertyptr->getName()
+                << " [$" << propertyptr->getHouse_cost() << "]" << std::endl;
+      ++counter;
+    }
+  }
+  return;
+}
+
+void Monopoly::GameState::printPropertySell(std::vector<Property*>& PropertyList, Rules& rules, int& counter ) {
+  for(const auto& propertyptr : PropertyList) {
+    if(rules.getNum_houses_before_hotel() == propertyptr->getNumHouses()) {
+      std::cout << counter << ". "
+                << propertyptr->getName()
+                << " [$" << propertyptr->getHotel_cost() / 2 << "]" << std::endl;
+      ++counter;
+    }
+    else {
+      std::cout << counter << ". "
+                << propertyptr->getName()
+                << " [$" << propertyptr->getHouse_cost() / 2 << "]" << std::endl;
+      ++counter;
+    }
+  }
+  return;
+}
+
 void Monopoly::GameState::removeFromGame(Monopoly::Player& player) {
   // remove the player from the vector
   for (auto playerIt = players.cbegin(); playerIt != players.cend(); ++playerIt) {
@@ -178,3 +258,6 @@ void Monopoly::GameState::removeFromGame(Monopoly::Player& player) {
   player_turn--;
 
 }
+
+
+

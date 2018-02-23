@@ -12,7 +12,7 @@
 #include "PropertyManager.h"
 #include "Rules.h"
 #include "Move.h"
-#include "GameState.h"
+
 namespace Monopoly {
   class Player {
    public:
@@ -20,10 +20,11 @@ namespace Monopoly {
     Player(int id, const std::string& name, int cash, Space* spaceOn, const PropertyManager& propertyManager);
     Player(const Player& player) = default;
     Space& getSpaceOn();
+    PropertyManager& getPropertyManager();
     virtual ~Player();
 
-    void setOn(Space& space, std::vector<Player>& players, bool activateSpace = true);
-    void moveTo(Space& space, std::vector<Player>& players, bool activateSpace = true);
+    void setOn(Space& space, bool activateSpace = true);
+    void moveTo(Space& space, bool activateSpace = true);
 
     const std::string& getName() const;
     int getCash() const;
@@ -31,7 +32,7 @@ namespace Monopoly {
     void giveCash(const int amount);
 
     void purchase(Property& property);
-    void auction_win(Monopoly::Property& property,int highestbid);
+
     bool getBuyDecision(const Space& space) const;
 
     void pay(Monopoly::Player& owner, const Property& propertyOn, const Rules& rules);
@@ -39,18 +40,6 @@ namespace Monopoly {
     int getNetWorth() const;
     void refreshReferencesTo();
 
-    void set_is_in_auction_bool(bool x){
-      is_in_auction = x;
-    }
-    bool get_is_in_auction_bool(){
-      return is_in_auction;
-    }
-    void set_is_max_bidder(){
-      is_max_bidder = false;
-    }
-    bool get_is_max_bidder(){
-      return is_max_bidder;
-    }
     Move getMove();
 
     void display();
@@ -63,9 +52,6 @@ namespace Monopoly {
     Move current_move;
     Space* spaceOn;
     PropertyManager propertyManager;
-
-  bool is_in_auction;
-  bool is_max_bidder;
 
   };
 }

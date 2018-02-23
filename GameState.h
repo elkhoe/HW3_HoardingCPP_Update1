@@ -29,12 +29,17 @@ namespace Monopoly {
     void make_move(Player& player, Move& move);
     void declareWinner();
     void changeTurn();
+    void upgradePlayerProperty(std::vector<Property*>& PropertyList);
+    void upgradeBuilding(Property*& propertyptr, const Rules& rules);
+    void sellBuilding(Property*& propertyptr, const Rules& rules);
+    void printProperty(std::vector<Property*>& PropertyList, Rules& rules, int& counter);
+    void printPropertySell(std::vector<Property*>& PropertyList, Rules& rules, int& counter);
+    void sellPlayerProperty(std::vector<Property*>& PropertyList);
     void removeFromGame(Player& player);
-    std::vector<Player> get_players(){
-      return players;
-    }
+
+
     void display() const;
-    //bool roll_again(int num);
+
    private:
 
     Rules rules;

@@ -59,4 +59,8 @@ int Monopoly::PropertyManager::getValue() const {
   return value;
 }
 
+std::map<int, Monopoly::PropertySet>& Monopoly::PropertyManager::getEntireMap() {
+  return propertySets;
+
+}
 
